@@ -1,0 +1,371 @@
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.action_chains import ActionChains
+import time
+import os
+from datetime import datetime
+import openpyxl
+from openpyxl.styles import PatternFill
+
+# Configuración del ChromeDriver
+options = Options()
+options.add_argument("--no-sandbox")  # Desactivar sandbox
+options.add_argument("--disable-dev-shm-usage")  # Para evitar problemas con recursos compartidos
+service = Service("C:\\Users\\lnaifoino\\Documents\\chromedriver-win64\\chromedriver.exe")
+driver = webdriver.Chrome(service=service, options=options)
+
+# Abrir la página
+driver.get("https://config.simply-assistance.com/Main/ReportVoucher/?tknsession=21a3fce0-2b7f-48cf-9c26-8ec87e00a4df")
+
+# Esperar a que la página cargue
+time.sleep(2)
+
+# Ingresar fecha "Desde" con execute_script (formato DD/MM/YYYY)
+fecha_desde = driver.find_element(By.ID, "search_reportstartIssues")
+driver.execute_script("arguments[0].value = '01/01/2023';", fecha_desde)
+
+# Ingresar fecha "Hasta" con execute_script (formato DD/MM/YYYY)
+fecha_hasta = driver.find_element(By.ID, "search_reportendIssues")
+driver.execute_script("arguments[0].value = '12/12/2026';", fecha_hasta)
+
+
+
+# Esperar para asegurarnos de que la fecha se haya ingresado
+time.sleep(2)
+
+# Hacer clic fuera del calendario para cerrarlo
+body = driver.find_element(By.TAG_NAME, "body")
+body.click()
+
+# Esperar un momento para asegurarnos de que el calendario se cierre
+time.sleep(2)
+
+# Encontramos el botón de "Generar Excel"
+boton_generar_excel = driver.find_element(By.XPATH, "//button[text()='Generar Excel']")
+
+# Usando JavaScript para hacer clic en el botón
+driver.execute_script("arguments[0].click();", boton_generar_excel)
+
+# Esperar a que el reporte se genere
+time.sleep(2)
+
+# Ahora hacer clic en el enlace de descarga
+enlace_descarga = driver.find_element(By.ID, "reportDownloadLink")
+driver.execute_script("arguments[0].click();", enlace_descarga)
+
+# Esperar unos segundos para asegurarse de que la descarga inicie
+time.sleep(2)
+
+download_path = "C:\\Users\\lnaifoino\\Downloads"  # Cambia esto por tu carpeta de descargas
+time.sleep(10)
+# Renombrar el archivo descargado
+def renombrar_archivo_descargado(download_path, nuevo_nombre, nombre_actual="voucherReport"):
+    # Obtener la lista de archivos en la carpeta de descargas
+    archivos = os.listdir(download_path)
+
+    # Buscar el archivo descargado (puede ser exacto o comenzar con un nombre)
+    archivo_descargado = None
+    for archivo in archivos:
+        if archivo.startswith(nombre_actual) and archivo.endswith(".xlsx"):
+            archivo_descargado = os.path.join(download_path, archivo)
+            break
+
+    if not archivo_descargado:
+        print(f"No se encontró un archivo que comience con '{nombre_actual}' en la carpeta de descargas.")
+        return
+
+    # Definir la nueva ruta con el nuevo nombre
+    nuevo_archivo = os.path.join(download_path, nuevo_nombre + ".xlsx")
+
+    # Renombrar el archivo
+    os.rename(archivo_descargado, nuevo_archivo)
+    print(f"Archivo renombrado a: {nuevo_archivo}")
+
+# Llamar a la función para renombrar el archivo
+renombrar_archivo_descargado(download_path, "Descarga Simply", "voucherReport")
+
+# Cerrar el navegador
+driver.quit()
+
+
+#AHORA 365
+
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+import time
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+# Configuración del ChromeDriver
+options = Options()
+options.add_argument("--no-sandbox")  # Desactivar sandbox
+options.add_argument("--disable-dev-shm-usage")  # Para evitar problemas con recursos compartidos
+service = Service("C:\\Users\\lnaifoino\\Documents\\chromedriver-win64\\chromedriver.exe")
+driver = webdriver.Chrome(service=service, options=options)
+
+# Abrir la página de login
+driver.get("https://app.assist-365.com/admin/reserve")
+
+# Esperar a que la página cargue
+time.sleep(2)
+
+# Ingresar las credenciales
+username = driver.find_element(By.ID, "login-username")
+password = driver.find_element(By.ID, "login-password")
+
+# Ingresar usuario y contraseña
+username.send_keys("Central_WM")
+password.send_keys("qweqweqwe")
+
+# Hacer clic en el botón "Login"
+login_button = driver.find_element(By.CLASS_NAME, "btn-success")
+login_button.click()
+
+# Esperar que la página cargue después de hacer login
+time.sleep(2)
+
+# Hacer clic en el botón con la clase "gi-airplane"
+boton_airplane = driver.find_element(By.CLASS_NAME, "gi-airplane")  # Ajustar el selector si es necesario
+boton_airplane.click()
+
+# Esperar para que el sistema procese la acción
+time.sleep(2)
+
+# Hacer clic en "Filtros de búsqueda"
+filtros_buscada = driver.find_element(By.XPATH, "//a[contains(text(), 'Filtros de búsqueda')]")
+filtros_buscada.click()
+
+# Esperar que los filtros se desplieguen
+time.sleep(2)
+
+# Hacer clic en "Emisión"
+emision = driver.find_element(By.ID, "emit_date")  # Ajustar el selector si es necesario
+emision.click()
+
+# Hacer clic en "Personalizado"
+personalizado = driver.find_element(By.XPATH, "//li[contains(text(), 'Personalizado')]")
+personalizado.click()
+
+# Hacer clic en la flecha hacia atrás 12 veces
+#flechas_atras = driver.find_elements(By.CLASS_NAME, "fa-arrow-left")  # Asegúrate de que la clase sea correcta
+#for i in range(12):
+   # try:
+        # Desplazar hasta el elemento antes de hacer clic
+      #  driver.execute_script("arguments[0].scrollIntoView(true);", flechas_atras[i])
+
+        # Esperar hasta que el botón sea clickeable
+       # WebDriverWait(driver, 10).until(
+        #    EC.element_to_be_clickable((By.CLASS_NAME, "fa-arrow-left"))
+        #)
+
+        # Hacer clic en el elemento
+        #flechas_atras[i].click()
+
+        #time.sleep(1)  # Puedes ajustar el tiempo de espera si es necesario
+   # except Exception as e:
+      #  print(f"Error al hacer clic en la flecha: {e}")
+
+# Hacer clic en "1"
+uno = driver.find_element(By.XPATH, "//td[@title='r0c5']")  # Ajustar el selector según la imagen
+uno.click()
+
+# Hacer clic en "Aplicar"
+aplicar = driver.find_element(By.CLASS_NAME, "applyBtn")  # Ajustar el selector si es necesario
+aplicar.click()
+
+# Hacer clic en "Exportar Excel"
+exportar_excel = driver.find_element(By.ID, "export_excel_call_center")  # Ajustar el selector si es necesario
+exportar_excel.click()
+
+# Esperar que el archivo se descargue
+time.sleep(45)
+
+# Ruta de la carpeta de descargas
+download_path = "C:\\Users\\lnaifoino\\Downloads"  # Cambiar según tu carpeta de descargas
+
+# Renombrar el archivo descargado
+def renombrar_archivo_assist365():
+    # Esperar unos segundos para asegurarnos de que el archivo se descargue completamente
+    time.sleep(5)
+
+    # Ruta del archivo descargado
+    archivo_descargado = os.path.join(download_path, "reservas.xls")
+
+    # Verificar si el archivo existe
+    if os.path.exists(archivo_descargado):
+        # Ruta del nuevo archivo renombrado
+        nuevo_archivo = os.path.join(download_path, "Descarga Assist 365.xls")
+
+        # Renombrar el archivo
+        os.rename(archivo_descargado, nuevo_archivo)
+        print(f"Archivo renombrado exitosamente a: {nuevo_archivo}")
+    else:
+        print(f"El archivo 'reservas.xls' no se encontró en {download_path}")
+
+# Llamar a la función para renombrar el archivo de Assist 365
+renombrar_archivo_assist365()
+
+
+
+
+
+#COPIADO Y PEGADO DE ARCHIVO SIMPLY EN MACRO
+import openpyxl
+
+# Rutas de los archivos
+archivo_origen = r"C:\Users\lnaifoino\Downloads\Descarga Simply.xlsx"
+archivo_destino = r"C:\Users\lnaifoino\OneDrive - World Medical Care, LLC\Carga Simply Audax\Macro Simply.xlsm"
+
+# Abrir el archivo origen
+wb_origen = openpyxl.load_workbook(archivo_origen)
+hoja_origen = wb_origen.active
+
+# Abrir el archivo destino
+wb_destino = openpyxl.load_workbook(archivo_destino, keep_vba=True)  # `keep_vba=True` para no perder macros
+hoja_destino = wb_destino.active
+
+# Encontrar la última fila con valores en el archivo origen
+ultima_fila_origen = hoja_origen.max_row
+
+# Copiar desde la columna A hasta la Q y desde la fila 2 hasta la última fila con valores
+rango_a_copiar = []
+for fila in hoja_origen.iter_rows(min_row=2, max_row=ultima_fila_origen, min_col=1, max_col=17, values_only=True):
+    rango_a_copiar.append(fila)
+
+# Pegar los datos en el archivo destino, comenzando en A2
+fila_destino = 2  # Comenzar a pegar en A2
+for fila in rango_a_copiar:
+    hoja_destino.append(fila)
+
+# Guardar los cambios en el archivo destino
+wb_destino.save(archivo_destino)
+print(f"Datos copiados desde {archivo_origen} y pegados en {archivo_destino} exitosamente.")
+
+
+
+import os
+import subprocess
+
+# Ruta del archivo Excel
+archivo_excel = r"C:\Users\lnaifoino\OneDrive - World Medical Care, LLC\Carga Simply Audax\Macro Simply.xlsm"
+
+# Nombre de la macro
+nombre_macro = "cacacacacaculo"
+
+# Generar el script VBScript
+script_vbs = r"C:\Users\lnaifoino\run_macro.vbs"
+with open(script_vbs, "w") as f:
+    f.write(f"""
+Set objExcel = CreateObject("Excel.Application")
+Set objWorkbook = objExcel.Workbooks.Open("{archivo_excel}")
+
+objExcel.Application.Run "{nombre_macro}" ' Nombre de la macro
+objWorkbook.Save
+objWorkbook.Close
+
+objExcel.Application.Quit
+Set objExcel = Nothing
+""")
+
+# Ejecutar el script VBScript
+try:
+    subprocess.run(["cscript", script_vbs], check=True)
+    print(f"La macro '{nombre_macro}' se ejecutó correctamente en el archivo '{archivo_excel}'.")
+except subprocess.CalledProcessError as e:
+    print(f"Error al ejecutar la macro: {e}")
+
+# Eliminar el script VBScript después de ejecutarlo
+os.remove(script_vbs)
+
+import win32com.client as win32
+
+# Rutas del archivo origen y destino
+archivo_origen = r"C:\Users\lnaifoino\Downloads\Descarga Assist 365.xls"
+archivo_convertido = r"C:\Users\lnaifoino\Downloads\Descarga Assist 365.xlsx"
+
+# Crear instancia de Excel
+excel = win32.Dispatch("Excel.Application")
+excel.Visible = False  # Cambiar a True si deseas ver el proceso
+
+try:
+   # Abrir el archivo .xls
+    wb = excel.Workbooks.Open(archivo_origen)
+
+    # Guardar como .xlsx
+    wb.SaveAs(archivo_convertido, FileFormat=51)  # FileFormat=51 es el formato para .xlsx
+    wb.Close()
+    excel.Quit()
+    print(f"Archivo convertido a .xlsx exitosamente: {archivo_convertido}")
+except Exception as e:
+    excel.Quit()
+    print(f"Error al convertir el archivo: {e}")
+
+
+import openpyxl
+
+# Rutas de los archivos
+archivo_origen = r"C:\Users\lnaifoino\Downloads\Descarga Assist 365.xlsx"
+archivo_destino = r"C:\Users\lnaifoino\OneDrive - World Medical Care, LLC\Carga 365 Audax\Para Macro 365.xlsm"
+
+# Abrir el archivo origen
+wb_origen = openpyxl.load_workbook(archivo_origen)
+hoja_origen = wb_origen.active
+
+# Abrir el archivo destino
+wb_destino = openpyxl.load_workbook(archivo_destino, keep_vba=True)  # keep_vba=True para preservar las macros en el archivo destino
+hoja_destino = wb_destino.active
+
+# Encontrar la última fila con valores en el archivo origen
+ultima_fila_origen = hoja_origen.max_row
+
+# Copiar desde la columna A hasta la T (20 columnas) y desde la fila 2 hasta la última fila con valores
+rango_a_copiar = []
+for fila in hoja_origen.iter_rows(min_row=2, max_row=ultima_fila_origen, min_col=1, max_col=20, values_only=True):
+    rango_a_copiar.append(fila)
+
+# Pegar los datos en el archivo destino, comenzando en A2
+fila_destino = 2  # Comenzar a pegar en A2
+for fila in rango_a_copiar:
+    hoja_destino.append(fila)
+
+# Guardar los cambios en el archivo destino
+wb_destino.save(archivo_destino)
+print(f"Datos copiados desde {archivo_origen} y pegados en {archivo_destino} exitosamente.")
+
+
+import win32com.client as win32
+
+# Ruta del archivo destino
+archivo_destino = r"C:\Users\lnaifoino\OneDrive - World Medical Care, LLC\Carga 365 Audax\Para Macro 365.xlsm"
+
+# Crear instancia de Excel
+excel = win32.Dispatch("Excel.Application")
+excel.Visible = False  # Cambiar a True si deseas ver el proceso en Excel
+
+try:
+    # Abrir el archivo .xlsm
+    wb = excel.Workbooks.Open(archivo_destino)
+
+    # Ejecutar la primera macro
+    excel.Application.Run(f"'{wb.Name}'!ProcesarDatosMEJORADO")
+    print("Primera macro 'ProcesarDatosMEJORADO' ejecutada exitosamente.")
+
+    # Ejecutar la segunda macro
+    excel.Application.Run(f"'{wb.Name}'!PegarAlTemplate")
+    print("Segunda macro 'PegarAlTemplate' ejecutada exitosamente.")
+
+    # Guardar y cerrar el archivo
+    wb.Save()
+    wb.Close()
+    print(f"Macros ejecutadas correctamente en el archivo: {archivo_destino}")
+except Exception as e:
+    print(f"Error al ejecutar las macros: {e}")
+finally:
+    # Asegurarse de cerrar Excel
+    excel.Quit()
