@@ -1,0 +1,60 @@
+import os
+import time
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
+# Configuración inicial
+CARPETA_ARCHIVOS = r"C:\\Users\\lnaifoino\\OneDrive - World Medical Care, LLC\\BDX\\36 Simply\\TARIFAS\\FINAL\\nuevo Seba"
+URL = "https://garlan.knack.com/simply-assistance#administacion-distr/portfolio-y-tarifas/"
+INPUT_SELECCIONAR_ARCHIVO = "tarifas-sheet-input"
+BOTON_SUBMIT = "submit-btn"
+
+# Iniciar el navegador
+driver = webdriver.Chrome()  # Cambia a Edge, Firefox, etc., si usas otro navegador
+driver.maximize_window()
+driver.get(URL)
+
+def login():
+    # Ingresar credenciales
+    driver.find_element(By.ID, "email").send_keys("lcontreras@simply-assistance.com")
+    driver.find_element(By.ID, "password").send_keys("Mgta04147892671")
+
+    # Click en botón iniciar sesión
+    driver.find_element(By.XPATH, "//input[@type='submit' and @value='Iniciar sesión']").click()
+    time.sleep(5)  # Esperar a que cargue la página
+
+# Función para cargar archivos
+def cargar_archivo(archivo):
+    try:
+        # Seleccionar archivo
+        wait = WebDriverWait(driver, 10)
+        input_element = wait.until(EC.presence_of_element_located((By.ID, INPUT_SELECCIONAR_ARCHIVO)))
+        input_element.send_keys(archivo)
+        time.sleep(5)  # Esperar a que cargue el archivo
+
+        # Click en botón de cargar
+        boton_submit = wait.until(EC.element_to_be_clickable((By.ID, BOTON_SUBMIT)))
+        boton_submit.click()
+
+        # Pausa manual para esperar confirmación de usuario
+        print("Archivo cargado. Esperando confirmación para continuar.")
+        input("Presiona Enter después de hacer clic manualmente en 'Upload Tarifas' para continuar...")
+    except Exception as e:
+        print(f"Error al cargar el archivo {archivo}: {e}")
+
+# Llamar a la función de login
+login()
+
+# Iterar sobre los archivos en la carpeta
+for i in range(5, 89):
+    archivo = os.path.join(CARPETA_ARCHIVOS, f"Carga {i:03}.xlsx")  # Generar nombre de archivo
+    if os.path.exists(archivo):  # Validar si el archivo existe
+        print(f"Preparado para cargar archivo: {archivo}")
+        cargar_archivo(archivo)
+    else:
+        print(f"Archivo no encontrado: {archivo}")
+
+# Cerrar el navegador al finalizar
+driver.quit()
